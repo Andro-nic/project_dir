@@ -5,19 +5,20 @@ from django.db.models import Sum
 
 
 class Author(models.Model):
-    user_rate = models.FloatField(default=0.0)
+    rate = models.FloatField(default=0.0)
     user = models.OneToOneField(User, on_delete=models.CASCADE)
 
     def update_rating(self):
         posts_rate = self.post_set.aggregate(pr=Coalesce(Sum('post_rate'), 0))['pr']
-        comments_rate = self.user.comment_set.agregate(cr=Coalesce(Sum('comment_rate'), 0))['cr']
+        comments_rate = self.user.comment_set.aggregate(cr=Coalesce(Sum('comment_rate'), 0))['cr']
         comments_posts_rate = self.post_set.aggregate(cpr=Coalesce(Sum('comment__comment_rate'), 0))['cpr']
-        self.user_rate = posts_rate * 3 + comments_rate + comments_posts_rate
+        self.rate = posts_rate * 3 + comments_rate + comments_posts_rate
         self.save()
-        return self.user_rate
+        return self.rate
 
 
 class Category(models.Model):
+
     category_name = models.CharField(max_length=100, unique=True)
 
 
@@ -72,5 +73,3 @@ class Comment(models.Model):
         self.comment_rate -= 1
         self.save()
         return self.comment_rate
-
-
