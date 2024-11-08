@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'django.contrib.flatpages',
     'fpages',
     'news_portal',
+    'simpleapp',
     #'my_test',
 
 
