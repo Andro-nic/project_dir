@@ -20,9 +20,9 @@ Posts
             </tr>
             {% for post in posts %}
             <tr>
-                <td style="vertical-align: top;">{{ post.title }}</td>
+                <td style="vertical-align: top;">{{ post.title|sensor }}</td>
                 <td>{{ post.date_in|date:"d F Y" }}</td>
-                <td style="text-align: left;">{{ post.text|truncatewords:20 }}</td>
+                <td style="text-align: left;">{{ post.text|truncatewords:20|sensor }}</td>
             </tr>
             {% endfor %}
         </table>
