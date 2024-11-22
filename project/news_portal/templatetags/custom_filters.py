@@ -13,4 +13,6 @@ def sensor(text):
             new_word = word[0] + '.' * (len(word)-1)
             text = text.replace(word, new_word)
 
+
     return text
+

@@ -8,6 +8,13 @@ Post
 
 <!-- В контенте на странице мы выводим сам товар, идентификатор которого был передан в url -->
 {% block content %}
+    <style>
+    a {
+    color: gray;
+    }
+    </style>
+    <a href="{% url 'post_list' %}"
+    style="display: block; text-align: left; margin-left: 0;"> Страница новостей </a>
     <h1>{{ post.title|sensor }}</h1>
     <i><h3>{{ post.date_in|date:"d F Y" }}</h3></i>
     <hr>
