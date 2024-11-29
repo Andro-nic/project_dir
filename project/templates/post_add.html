@@ -11,13 +11,11 @@ style="display: block; text-align: left; margin-left: 0;"> Страница но
 
 <h1>Публикация</h1>
 <hr>
-    {% if user == object.author.user %}
+
 <form action="" method="post">
     {% csrf_token %}
     {{ form.as_p }}
     <input type="submit" class="btn btn-sm btn-secondary" value="Сохранить" />
 </form>
-    {% else %}
-<h2> Вы не можете редактировать публикацию, так как не являетесь ее автором </h2>
-    {% endif %}
+
 {% endblock content %}

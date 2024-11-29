@@ -1,0 +1,19 @@
+{% extends 'flatpages/default.html' %}
+
+{% block title %}
+User
+{% endblock title %}
+
+
+{% block content %}
+<h2>Страница пользователя {{request.user.username}}</h2>
+<!-- Контейнер для кнопок -->
+<div style="display: flex; justify-content: center; gap: 10px; align-items: center;">
+    <form method="post" action="{% url 'logout' %}">
+    {% csrf_token %}
+    <button type="submit" class="btn btn-sm btn-secondary">Выйти</button>
+    </form>
+    {% if is_not_authors %}
+    <a href="sign/upgrade/" class="btn btn-sm btn-secondary"> Хочу стать автором!</a>
+    {% endif %}
+{% endblock content %}

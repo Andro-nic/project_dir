@@ -1,0 +1,108 @@
+>>>from django.contrib.auth.models import User
+
+Сздаем пользователей. Пункт 1
+>>>us1 = User.objects.create_user(username='Ivan')
+>>>us2 = User.objects.create_user(username='Petr', password='222')
+
+>>>from news_portal.models import All
+
+Создаем авторов. Пункт 2 
+>>>au1 = Author.objects.create(user=us1)    
+>>>au2 = Author.objects.create(user=us2) 
+
+Сщздаем категории. Пункт 3
+>>>cat1 = Category.objects.create(category_name='Спорт')  
+>>>cat2 = Category.objects.create(category_name='Политика')
+>>>cat3 = Category.objects.create(category_name='Литература')  
+>>>cat4 = Category.objects.create(category_name='Исскуство')
+
+Создаем статьи. Пункт 4 
+>>>ps1 = Post.objects.create(post_type="NW",text='Вратарь ...',author=au1) 
+>>>ps2 = Post.objects.create(post_type="AR",text='...',author=au1)
+>>>ps3 = Post.objects.create(post_type="AR",text='...',author=au2)
+добавляю заголовок статьи(забыл при создании)
+>>> ps1.title="ФК Динамо остается без вратаря"
+>>> ps1.save()
+>>> ps3.title="Спорт и политика"                                  
+>>> ps3.save
+>>> ps2.title="146 лет со дня рождения художника"                                  
+>>> ps2.save    
+
+ПРОИЗОШЛА ПРЕРЕЗАГРУЗКА SHELL
+
+Пункт 5
+получаем экземпляр новостей:
+>>>ps1 = Post.objects.get(id=1)
+>>>ps2 = Post.objects.get(id=2)
+>>>ps3 = Post.objects.get(id=3)
+получаем экземпляр категорий
+>>>ct1 = Category.objects.get(id=1)
+>>>ct2 = Category.objects.get(id=2)
+>>>ct4 = Category.objects.get(id=4)
+присваиваем новостям категории пункт
+>>> ps1.category.add(ct1)
+>>> ps3.category.add(ct1,ct2)
+>>> ps2.category.add(ct4)
+
+пишим комментарии к статьям. Пункт 6
+>>> cm1 = Comment.objects.create(post=ps1, user = us2, text='новость - огонь')
+>>> cm3 = Comment.objects.create(post=ps2, user = us2, text='автор как всегода на высоте')  
+>>> cm2 = Comment.objects.create(post=ps3, user = us1, text='статья абсолютно не интересная')  
+>>> cm4 = Comment.objects.create(post=ps1, user = us1, text='супер')  
+>>> cm5=Comment.objects.create(post=ps2, user = us1, text='очень интересно')
+
+лайкаем посты. Пункт 7
+>>> ps3.dislike() 
+>>> ps2.like()
+>>> ps1.like() 
+>>> ps2.like()
+
+лайкаем комменты пункт 7
+>>> cm1.like()
+>>> cm2.like()
+>>> cm3.dislike()
+>>> cm4.like()
+>>> cm5.like()
+
+обновляем рейтинг автора. Пункт 8
+получаем обьект Author связаный с User
+>>> at1=Author.objects.get(user=us1) 
+>>> at2=Author.objects.get(user=us2) 
+обновляем рейтинг автора пункт 
+>>> at1.update_rating()                                         
+14
+>>> at2.update_rating() 
+-2
+
+Выводим имя и рейтинг лучшего пользователя. Пункт 9
+>>> Author.objects.all().values("user__username","rate").order_by("-rate").first()
+{'user__username': 'Ivan', 'rate': 12.0}
+
+Выборка. Пункт 10
+>>> res=Post.objects.all().values("date_in","author__user__username","post_rate","title","id").order_by("-post_rate").first()                                     
+>>> prev=Post.objects.get(id=res["id"]).preview() if res is not None else "статьи нет"                                                                  
+>>> print(f'Дата - {res["date_in"]}\nАвтор - {res["author__user__username"]}\nРейтинг - {res["post_rate"]}\nЗаголовок - {res["title"]}\nПревью - {prev}')
+Дата - 2024-11-05 14:32:40.990419+00:00
+Автор - Ivan
+Рейтинг - 2
+Заголовок - 146 лет со дня рождения художника
+Превью - 5 ноября 1878 года в Хвалынске Саратовской губернии родился Кузьма Сергеевич Петров-Водкин. Первоначальное художественное об...
+
+Выборка. Пункт 11
+>>> res=Post.objects.all().values("date_in","author__user__username","post_rate","title","id").order_by("-post_rate").first()                             
+>>> res1=Post.objects.filter(id=res["id"]).values("comment__date_in","comment__comment_rate","comment__text","comment__user__username")  
+for res in res1: 
+...     date_in = res['comment__date_in']
+...     user = res['comment__user__username']
+...     rate = res['comment__comment_rate']
+...     text = res['comment__text']
+...     print(f"Дата - {date_in}\nПользователь - {user}\nРейтинг - {rate}\nТекст - {text}")
+...
+Дата - 2024-11-05 17:08:34.860556+00:00
+Пользователь - Petr
+Рейтинг - 1
+Текст - автор как всегода на высоте
+Дата - 2024-11-07 09:58:14.394536+00:00
+Пользователь - Ivan
+Рейтинг - 1
+Текст - очень интересно

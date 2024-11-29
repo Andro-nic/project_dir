@@ -23,8 +23,8 @@ Search
     color: gray;
     }
 </style>
-    <a href="{% url 'post_list' %}"
-    style="display: block; text-align: left; margin-left: 0;"> Страница новостей </a>
+    <!--<a href="{% url 'post_list' %}"
+    style="display: block; text-align: left; margin-left: 0;"> Страница новостей </a>-->
     <h1>Поиск</h1>
     <form action="" method="get">
        {{ filterset.form.as_p }}
@@ -51,13 +51,13 @@ Search
                     <td style="vertical-align: top; text-align: left;">{{ post.text|truncatewords:20|sensor }}</td>
                     <td>
                         {% if post.post_type == "NW" %}
-                            <a href="{% url 'post_detail' post.id %}"><input type="submit" value="Читать"></a>
-                            <a href="{% url 'edit_news' post.id %}"><input type="submit" value="Редактировать"></a>
-                            <a href="{% url 'delete_news' post.id %}"><input type="submit" value="Удалить"></a>
+                            <a href="{% url 'post_detail' post.id %}" class="btn btn-sm btn-secondary">Читать </a>
+                            <a href="{% url 'edit_news' post.id %}" class="btn btn-sm btn-secondary">Редактировать</a>
+                            <a href="{% url 'delete_news' post.id %}" class="btn btn-sm btn-secondary">Удалить</a>
                         {% else %}
-                            <a href="{% url 'post_detail' post.id %}"><input type="submit" value="Читать"></a>
-                            <a href="{% url 'edit_article' post.id %}"><input type="submit" value="Редактировать"></a>
-                            <a href="{% url 'delete_article' post.id %}"><input type="submit" value="Удалить"></a>
+                            <a href="{% url 'post_detail' post.id %}" class="btn btn-sm btn-secondary">Читать</a>
+                            <a href="{% url 'edit_article' post.id %}" class="btn btn-sm btn-secondary">Редактировать</a>
+                            <a href="{% url 'delete_article' post.id %}" class="btn btn-sm btn-secondary">Удалить</a>
                                {% endif %}
                     </td>
                 </tr>

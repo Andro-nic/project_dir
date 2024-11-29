@@ -6,13 +6,17 @@
     color: gray;
     }
 </style>
-<a href="{% url 'post_list' %}"
-style="display: block; text-align: left; margin-left: 0;"> Страница новостей </a>
+<!--<a href="{% url 'post_list' %}"
+style="display: block; text-align: left; margin-left: 0;"> Страница новостей </a>-->
 <h1>Удаление товара</h1>
 <hr>
+{% if user == object.author.user %}
 <form action="" method="post">
     {% csrf_token %}
     <p>Внимание! Удаление публикации "{{ object.title }}"- процедура необратимая! Продолжим ?</p>
-    <input type="submit" class=" btn btn-dark" value="Удалить" />
+    <input type="submit" class="btn btn-sm btn-secondary" value="Удалить" />
 </form>
+{% else %}
+<h2> Вы не можете удалить публикацию, так как не являетесь ее автором </h2>
+    {% endif %}
 {% endblock content %}
