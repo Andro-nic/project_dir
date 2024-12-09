@@ -35,7 +35,7 @@ Search
 <!-- проверяем есть ли параметры в запросе поиска-->
     {% if request.GET %}
         {% if posts %}
-            <table>
+        <table>
                 <tr>
                     <th>Заголовок</th>
                     <th>Дата публикации</th>
@@ -63,7 +63,7 @@ Search
                 </tr>
                 {% endfor %}
             </table>
-        {% else %}"
+        {% else %}
             <h2>Статей нет</h2>
         {% endif %}
 

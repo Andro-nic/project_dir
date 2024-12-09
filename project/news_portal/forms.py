@@ -1,6 +1,6 @@
 from django import forms
 from django.core.exceptions import ValidationError
-from .models import Post
+from .models import Post, UsersSubscribed
 from .templatetags.bad_words import BED_WORDS
 
 
@@ -9,7 +9,15 @@ class PostForm(forms.ModelForm):
 
     class Meta:
         model = Post
-        fields = ['title', 'text', 'author']
+        fields = ['title', 'text', 'author', 'category']
+        print(fields)
+
+    def __init__(self, *args, **kwargs):
+        user = kwargs.pop('user', None)  # Получаем пользователя из kwargs
+        super().__init__(*args, **kwargs)
+        if user:
+            self.fields['author'].queryset = self.fields['author'].queryset.filter(user_id=user.id)
+
 
     def clean(self):
         cleaned_data = super().clean()
@@ -33,3 +41,11 @@ class PostForm(forms.ModelForm):
             break
 
         return cleaned_data
+
+
+class CategoryForm(forms.ModelForm):
+
+    class Meta:
+        model = UsersSubscribed
+        fields = ['category']
+        print(fields)

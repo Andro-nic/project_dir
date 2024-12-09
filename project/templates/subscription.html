@@ -1,0 +1,31 @@
+
+{% extends 'flatpages/default.html' %}
+{% load custom_filters %}
+
+{% block title %}
+Post
+{% endblock title %}
+
+
+{% block content %}
+    <style>
+    a {
+    color: gray;
+    }
+    </style>
+    <h1>Оформить подписку </h1>
+    <form action="" method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+       <input type="submit" class=" btn btn-dark" value="Подписаться" />
+    </form>
+
+    {% if messages %}
+       <ul class="messages">
+           {% for message in messages %}
+               <li {% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+           {% endfor %}
+       </ul>
+   {% endif %}
+
+{% endblock content %}
