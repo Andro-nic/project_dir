@@ -7,7 +7,7 @@ from apscheduler.triggers.cron import CronTrigger
 from django.core.management.base import BaseCommand
 from django_apscheduler.jobstores import DjangoJobStore
 from django_apscheduler.models import DjangoJobExecution
-from news_portal.tasks import my_job
+#from news_portal.tasks import my_job
 
 
 logger = logging.getLogger(__name__)
@@ -28,7 +28,7 @@ class Command(BaseCommand):
 
         # добавление задачи на рассылку писем
         scheduler.add_job(
-            my_job,
+            #my_job,
             trigger=CronTrigger(day_of_week="tue", hour="15", minute="34"),
             id="send_weekly_articles",
             max_instances=1,

@@ -10,6 +10,7 @@ from django.urls import reverse_lazy
 from django.contrib import messages
 from django.http import HttpResponseRedirect
 from django.db.models import QuerySet
+from .tasks import send_new_post
 from django.db.models.signals import post_save
 
 
@@ -79,10 +80,10 @@ class CreateNews(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
                category = category.first()
             full_url = self.request.build_absolute_uri(post.get_absolute_url())
             email_list = UsersSubscribed.objects.filter(category_id=category).values_list('user_id__email', flat=True)
-
             email = list(email_list)
 
-            post_save.send(sender=Post, instance=post, created=True, full_url=full_url, email=email)
+            send_new_post.delay(post.id, full_url, email)
+            # post_save.send(sender=Post, instance=post, created=True, full_url=full_url, email=email)
         return super().form_valid(form)
 
 
@@ -110,12 +111,13 @@ class Subscription(LoginRequiredMixin, CreateView):
     def form_valid(self, form):
         user = self.request.user
         category = form.cleaned_data.get('category')
-        if UsersSubscribed.objects.filter(user=user, category=category).exists():
-            messages.info(self.request, f"Вы уже подписаны на {category}.")
-        else:
-            subscription = form.save(commit=False)
-            subscription.user = user  # Назначаем пользователя подписке
-            subscription.save()  # Сохраните экземпляр подписки
-            messages.success(self.request, f"Подписка на {category} успешно добавлена.")
+        subscription = form.save(commit=False)
+        subscription.user = user  # Назначаем пользователя подписке
+        subscription.save()  # Сохраните экземпляр подписки
+        messages.success(self.request, f"Подписка на {category} успешно добавлена.")
         return HttpResponseRedirect(self.request.path)
 
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs['user'] = self.request.user
+        return kwargs
