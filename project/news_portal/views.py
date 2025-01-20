@@ -1,9 +1,8 @@
-
 from django.views.generic import (ListView, DetailView, CreateView,
-                                  UpdateView, DeleteView )
+                                  UpdateView, DeleteView)
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.utils import timezone
-from .models import Post, UsersSubscribed
+from .models import Post, UsersSubscribed, Category
 from .filters import NewsFilter
 from .forms import PostForm, CategoryForm
 from django.urls import reverse_lazy
@@ -11,8 +10,8 @@ from django.contrib import messages
 from django.http import HttpResponseRedirect
 from django.db.models import QuerySet
 from .tasks import send_new_post
-from django.db.models.signals import post_save
-
+from django.shortcuts import render, get_object_or_404
+from django.core.cache import cache
 
 
 class PostsList(ListView):
@@ -22,6 +21,42 @@ class PostsList(ListView):
     context_object_name = 'posts'
     ordering = ['-date_in']
     paginate_by = 10
+
+    def get_context_data(self, **kwargs):
+        # Получаем контекст от родительского метода
+        context = super().get_context_data(**kwargs)
+        # Получаем список категорий
+        context['categories'] = Category.objects.all()
+        return context
+
+
+class PostCategory(ListView):
+    model = Post
+    template_name = 'post_category.html'
+    context_object_name = 'posts'
+
+    def get(self, request, pk):
+        category = get_object_or_404(Category, pk=pk)
+        posts = Post.objects.filter(category=category)
+        return render(request, 'post_category.html', {'category': category, 'posts': posts})
+
+
+class PostDetailView(DetailView):
+    template_name = 'post.html'
+    queryset = Post.objects.all()
+
+    def get_object(self, *args, **kwargs):  # переопределяем метод получения объекта
+
+        obj = cache.get(f'post-{self.kwargs["pk"]}', None)  # кэш очень похож на словарь, и метод get действует так же. Он забирает значение по ключу, если его нет, то забирает None.
+
+        # если объект' нет в кэше, то получаем его и записываем в кэш
+        if not obj:
+            obj = super().get_object(queryset=self.queryset)
+            cache.set(f'post-{self.kwargs["pk"]}', obj)
+            print('*************')
+            print(obj)
+            print('*************')
+        return obj
 
 
 class PostsDetail(DetailView):
@@ -41,11 +76,13 @@ class SearchNews(ListView):
 
         queryset = super().get_queryset()
         self.filterset = NewsFilter(self.request.GET, queryset)
+        print(self.filterset.qs)
         return self.filterset.qs
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['filterset'] = self.filterset
+        print(context)
         return context
 
 
@@ -58,7 +95,7 @@ class CreateNews(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
 
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
-        kwargs['user'] = self.request.user # Передаем текущего пользователя в форму
+        kwargs['user'] = self.request.user  # Передаем текущего пользователя в форму
         return kwargs
 
     def form_valid(self, form):
