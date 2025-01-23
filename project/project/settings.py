@@ -255,7 +255,8 @@ LOGGING = {
             'datefmt': "%d.%m.%Y %H-%M-%S"
         },
         'console_warning': {
-            'format': '%(asctime)s %(levelname)-8s %(message)s %(pathname)s'
+            'format': '%(asctime)s %(levelname)-8s %(message)s %(pathname)s',
+            'datefmt': "%d.%m.%Y %H-%M-%S"
 
         },
         'console_error': {
@@ -310,7 +311,7 @@ LOGGING = {
             'level': 'ERROR',
             'class': 'logging.FileHandler',
             'filename': 'logs/errors.log',
-            'formatter': 'file_error',
+            'formatter': 'file_errors',
         },
         'file_security': {
             'level': 'INFO',
@@ -351,4 +352,4 @@ LOGGING = {
             'propagate': True,
         },
     },
-},
+}
