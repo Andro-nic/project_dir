@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html lang="en">
+{% load i18n %}
+<html lang="ru">
     <head>
         <meta charset="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
@@ -9,35 +10,78 @@
         <!-- Core theme CSS (includes Bootstrap)-->
         {% load static %}
         <link href="{% static 'css/styles.css' %}" rel="stylesheet" />
-    </head>cd
-    <body>
+
+    </head>
+        <body>
+            <form action="{% url 'set_language' %}" method="POST"> {% csrf_token %} <!-- Не забываем по csrf_token для POST запросов -->
+                <input type="hidden" name="next" value="{{ redirect_to }}">
+
+                <select name="language" id="">
+                    {% get_available_languages as LANGUAGES %} <!-- получаем языки -->
+                    {% get_language_info_list for LANGUAGES as languages %} <!-- Помещаем их в список languages -->
+                    {% get_current_language as LANGUAGE_CODE %}
+                    {% for language in languages %} <!-- Итерируясь по списку, выводим их название на языке пользователя и код -->
+                        <option value="{{ language.code }}" {% if language.code == LANGUAGE_CODE %} selected {% endif %}>
+                            {{ language.name_local }} - {{ language.code }}
+                        </option>
+                    {% endfor %}
+                </select>
+                <input type="submit" value="set">
+            </form>
+        {% load cache %}
+        {% cache 60 navbar %}
         <!-- Responsive navbar-->
-        <nav class="navbar navbar-expand-lg navbar-dark bg-dark static-top">
-            <div class="container">
-                <a class="navbar-brand" href="#"></a>
-                <button class="navbar-toggler" type="button" data-toggle="collapse"
-                        data-target="#navbarResponsive"
-                        aria-controls="navbarResponsive" aria-expanded="false"
-                        aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="collapse navbar-collapse" id="navbarResponsive">
-                    <ul class="navbar-nav ml-auto">
-                        <li class="nav-item active">
-                            <a class="nav-link" href="{% url 'post_list' %}">Главная
+            <nav class="navbar navbar-expand-lg navbar-white bg-white static-top">
+                <div class="container">
+                    <a class="navbar-brand" href="{% url 'post_list' %}">
+                        <img src="{% static 'images/logo.png' %}" alt="Логотип" style="height: 100px;"></a>
+                    <button class="navbar-toggler" type="button" data-toggle="collapse"
+                            data-target="#navbarResponsive"
+                            aria-controls="navbarResponsive" aria-expanded="false"
+                            aria-label="Toggle navigation">
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
+                    <div class="collapse navbar-collapse" id="navbarResponsive">
+                        <ul class="navbar-nav ml-auto">
+                            <li class="nav-item active">
+                                <a class="nav-link text-grey" href="{% url 'post_list' %}"><b>{% trans "Главная" %}</b>
+                                    <span class="sr-only"></span>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-grey" href="{% url 'subscription' %}"><b>{% trans "Подписка" %}</b>
+                                    <span class="sr-only"></span>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-grey" href="{% url 'create_news' %}"><b>{% trans "Добавить новость" %}</b>
                                 <span class="sr-only"></span>
                             </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="/about/"></a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="/contacts/"></a>
-                        </li>
-                    </ul>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-grey" href="{% url 'create_article' %}"><b>{% trans "Добавить статью" %}</b>
+                                    <span class="sr-only"></span>
+                                </a>
+                            </li>
+
+                            <li class="nav-item">
+                                <a href="{% url 'search_news' %}" >
+                                    <img src="{% static 'images/search.png' %}" alt= "Поиск" style="width: 25px; height: auto;">
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="/accounts/login" >
+                                <img src="{% static 'images/pers_acc.png' %}" alt="Личный кабинет" style="width: 25px; height: auto;">
+                                </a>
+                            </li>
+
+                        </ul>
+                    </div>
                 </div>
-            </div>
-        </nav>
+            </nav>
+        {% endcache %}
+        <hr>
+
         <!-- Page content-->
         <div class="container">
             <div class="row">
@@ -48,5 +92,7 @@
                 </div>
             </div>
         </div>
+
       </body>
+
 </html>
