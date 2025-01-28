@@ -14,6 +14,7 @@ from django.shortcuts import render, get_object_or_404
 from django.core.cache import cache
 
 
+
 class PostsList(ListView):
     model = Post
     ordering = 'text'
